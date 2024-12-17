@@ -1,0 +1,986 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generate-client-db"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model appointments {
+  appointment_id  Int                 @id
+  rights          appointments_rights
+  appoint_date    DateTime            @db.Date
+  appoint_time    String              @db.Text
+  clinic          String?             @db.Text
+  doctor          String?             @db.Text
+  users_mobile_id Int
+  status          appointments_status
+  created_by      Int
+  updated_by      Int?
+  created_at      DateTime            @default(now()) @db.DateTime(0)
+  updated_at      DateTime            @default(now()) @db.DateTime(0)
+  deleted_at      DateTime?           @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model billing {
+  billing_id         Int                        @id
+  vn                 String                     @db.VarChar(255)
+  queue_no           String                     @db.VarChar(255)
+  bill_no            String                     @db.VarChar(255)
+  order_id           String?                    @db.VarChar(255)
+  charge_id          String?                    @db.VarChar(255)
+  total_price        Float                      @db.Float
+  patient_hn         String                     @db.VarChar(255)
+  patient_name       String                     @db.VarChar(255)
+  cashier_queue_id   Int?
+  has_webhook_notify billing_has_webhook_notify @default(dbgenerated("0"))
+  created_at         DateTime                   @default(now()) @db.DateTime(0)
+  updated_at         DateTime                   @default(now()) @db.DateTime(0)
+  payment_status     billing_payment_status?    @default(dbgenerated("0"))
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model broadcast_master {
+  broadcast_master_id Int       @id
+  message_title       String    @db.Text
+  message_body        String    @db.Text
+  date                DateTime  @db.Date
+  image               String?   @db.LongText
+  created_by          Int
+  updated_by          Int
+  created_at          DateTime  @default(now()) @db.DateTime(0)
+  updated_at          DateTime  @default(now()) @db.DateTime(0)
+  deleted_at          DateTime? @db.DateTime(0)
+  link_url            String?   @db.Text
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model broadcast_master_has_users_mobile {
+  broadcast_master_has_users_mobile_id Int       @id
+  broadcast_master_id                  Int
+  users_mobile_id                      Int
+  created_by                           Int
+  updated_by                           Int
+  created_at                           DateTime  @default(now()) @db.DateTime(0)
+  updated_at                           DateTime  @default(now()) @db.DateTime(0)
+  deleted_at                           DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model building {
+  building_id Int       @id
+  name        String    @db.Text
+  created_by  Int
+  updated_by  Int
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  updated_at  DateTime  @default(now()) @db.DateTime(0)
+  deleted_at  DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cashier_queue {
+  cashier_queue_id        Int                                  @id
+  patient_hn              String                               @db.VarChar(255)
+  patient_name            String                               @db.VarChar(255)
+  vn                      String                               @db.VarChar(255)
+  queue_no                String                               @db.VarChar(255)
+  patient_location_code   String                               @db.VarChar(255)
+  patient_location_name   String                               @db.VarChar(255)
+  discharge_location_code String                               @db.VarChar(255)
+  discharge_location_name String                               @db.VarChar(255)
+  discharge_building      String                               @db.VarChar(255)
+  meddischarge_date       String                               @db.VarChar(255)
+  meddischarge_time       String                               @db.VarChar(255)
+  accepted_date           String                               @db.VarChar(255)
+  accepted_time           String                               @db.VarChar(255)
+  collected_date          String                               @db.VarChar(255)
+  collected_time          String                               @db.VarChar(255)
+  is_cashier              cashier_queue_is_cashier
+  medicine_status         cashier_queue_medicine_status?
+  medicine_room           Int?
+  cashier_status          cashier_queue_cashier_status?
+  cashier_status_mobile   cashier_queue_cashier_status_mobile?
+  payment_type            cashier_queue_payment_type?          @default(dbgenerated("0"))
+  cashier_room            Int?
+  remark                  String?                              @db.LongText
+  method_status           cashier_queue_method_status?
+  created_at              DateTime                             @default(now()) @db.DateTime(0)
+  updated_at              DateTime                             @default(now()) @db.DateTime(0)
+  lang                    cashier_queue_lang?                  @default(th)
+
+  @@index([cashier_status], map: "cashier_status")
+  @@index([created_at], map: "created_at")
+  @@index([is_cashier], map: "is_cashier")
+  @@index([medicine_status], map: "medicine_status")
+  @@index([method_status], map: "method_status")
+  @@index([patient_location_code], map: "patient_location_code")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contact_us {
+  contact_us_id Int
+  content       String   @db.LongText
+  created_by    Int
+  updated_by    Int
+  created_at    DateTime @db.DateTime(0)
+  updated_at    DateTime @db.DateTime(0)
+  deleted_at    DateTime @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contact_us_social {
+  contact_us_social_id Int
+  name                 String    @db.Text
+  icon                 String    @db.LongText
+  link                 String    @db.Text
+  created_by           Int
+  updated_by           Int
+  created_at           DateTime  @default(now()) @db.DateTime(0)
+  updated_at           DateTime  @default(now()) @db.DateTime(0)
+  deleted_at           DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model demo_patient_info {
+  id           Int
+  hn           String @db.VarChar(255)
+  name         String @db.VarChar(255)
+  name_eng     String @db.VarChar(255)
+  dob          String @db.VarChar(255)
+  patient_plan String @db.VarChar(255)
+  pid          String @db.VarChar(255)
+  mobile_phone String @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model demo_patient_log {
+  id           Int
+  hn           String @db.VarChar(255)
+  name         String @db.VarChar(255)
+  name_eng     String @db.VarChar(255)
+  dob          String @db.VarChar(255)
+  patient_plan String @db.VarChar(255)
+  pid          String @db.VarChar(255)
+  mobile_phone String @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model doctor {
+  doctor_id      Int
+  department     String    @db.VarChar(255)
+  doctor_code    String    @db.VarChar(255)
+  doctor_name    String    @db.VarChar(255)
+  created_at     DateTime  @default(now()) @db.DateTime(0)
+  updated_at     DateTime  @default(now()) @db.DateTime(0)
+  deleted_at     DateTime? @db.DateTime(0)
+  doctor_name_en String?   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model doctor_backup {
+  doctor_id      Int
+  department     String    @db.VarChar(255)
+  doctor_code    String    @db.VarChar(255)
+  doctor_name    String    @db.VarChar(255)
+  created_at     DateTime  @default(now()) @db.DateTime(0)
+  updated_at     DateTime  @default(now()) @db.DateTime(0)
+  deleted_at     DateTime? @db.DateTime(0)
+  doctor_name_en String?   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model doctor_current {
+  doctor_id      Int
+  department     String    @db.VarChar(255)
+  doctor_code    String    @db.VarChar(255)
+  doctor_name    String    @db.VarChar(255)
+  created_at     DateTime  @default(now()) @db.DateTime(0)
+  updated_at     DateTime  @default(now()) @db.DateTime(0)
+  deleted_at     DateTime? @db.DateTime(0)
+  doctor_name_en String?   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model doctor_engname {
+  doctor_id      Int
+  department     String    @db.VarChar(255)
+  doctor_code    String    @db.VarChar(255)
+  doctor_name    String    @db.VarChar(255)
+  created_at     DateTime  @default(now()) @db.DateTime(0)
+  updated_at     DateTime  @default(now()) @db.DateTime(0)
+  deleted_at     DateTime? @db.DateTime(0)
+  doctor_name_en String?   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model doctor_queue {
+  doctor_queue_id Int                        @id @default(autoincrement())
+  patient_hn      String?                    @db.VarChar(255)
+  patient_name    String?                    @db.VarChar(255)
+  vn              String?                    @db.VarChar(255)
+  doctor_code     String?                    @db.VarChar(255)
+  doctor_name     String?                    @db.VarChar(255)
+  location_code   String?                    @db.VarChar(255)
+  location_name   String?                    @db.VarChar(255)
+  building        String?                    @db.VarChar(255)
+  service         String?                    @db.VarChar(255)
+  appt_row_id     String?                    @db.VarChar(255)
+  appt_date       String?                    @db.VarChar(255)
+  appt_time       String?                    @db.VarChar(255)
+  arrive_date     String?                    @db.VarChar(255)
+  arrive_time     String?                    @db.VarChar(255)
+  queue_no        String?                    @db.VarChar(255)
+  status_lab      String?                    @db.VarChar(100)
+  status_xray     String?                    @db.VarChar(100)
+  is_emergency    doctor_queue_is_emergency? @default(N)
+  status          doctor_queue_status        @default(dbgenerated("0"))
+  created_at      DateTime                   @default(now()) @db.DateTime(0)
+  updated_at      DateTime                   @default(now()) @db.DateTime(0)
+  lang            doctor_queue_lang?         @default(th)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model emergency {
+  emergency_id Int
+  name         String           @db.VarChar(255)
+  phone        String           @db.VarChar(255)
+  latitude     Float
+  longitude    Float
+  status       emergency_status
+  created_by   Int
+  updated_by   Int?
+  created_at   DateTime         @db.DateTime(0)
+  updated_at   DateTime         @db.DateTime(0)
+  deleted_at   DateTime?        @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model emergency_image {
+  emergency_image_id Int
+  image              String    @db.LongText
+  created_by         Int
+  updated_by         Int
+  created_at         DateTime  @default(now()) @db.DateTime(0)
+  updated_at         DateTime  @default(now()) @db.DateTime(0)
+  deleted_at         DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model floor {
+  floor_id      Int
+  name          String       @db.Text
+  building_id   Int
+  rights        floor_rights
+  location_code String       @db.VarChar(255)
+  location_name String       @db.VarChar(255)
+  created_by    Int
+  updated_by    Int
+  created_at    DateTime     @default(now()) @db.DateTime(0)
+  updated_at    DateTime     @default(now()) @db.DateTime(0)
+  deleted_at    DateTime?    @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model home_banner {
+  home_banner_id Int
+  image          String    @db.LongText
+  start_date     DateTime  @db.Date
+  end_date       DateTime  @db.Date
+  status         Boolean   @default(true)
+  created_by     Int
+  updated_by     Int
+  created_at     DateTime  @default(now()) @db.DateTime(0)
+  updated_at     DateTime  @default(now()) @db.DateTime(0)
+  deleted_at     DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_cashier {
+  cashier_queue_id        Int
+  patient_hn              String                       @db.VarChar(255)
+  patient_name            String                       @db.VarChar(255)
+  vn                      String                       @db.VarChar(255)
+  queue_no                String                       @db.VarChar(255)
+  patient_location_code   String                       @db.VarChar(255)
+  patient_location_name   String                       @db.VarChar(255)
+  discharge_location_code String                       @db.VarChar(255)
+  discharge_location_name String                       @db.VarChar(255)
+  discharge_building      String                       @db.VarChar(255)
+  meddischarge_date       String                       @db.VarChar(255)
+  meddischarge_time       String                       @db.VarChar(255)
+  accepted_date           String                       @db.VarChar(255)
+  accepted_time           String                       @db.VarChar(255)
+  collected_date          String                       @db.VarChar(255)
+  collected_time          String                       @db.VarChar(255)
+  is_cashier              log_cashier_is_cashier
+  medicine_status         log_cashier_medicine_status?
+  medicine_room           Int?
+  cashier_status          log_cashier_cashier_status?
+  cashier_room            Int?
+  remark                  String?                      @db.LongText
+  method_status           log_cashier_method_status?
+  created_at              DateTime                     @default(now()) @db.DateTime(0)
+  updated_at              DateTime                     @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_doctor {
+  doctor_queue_id Int
+  patient_hn      String                  @db.VarChar(255)
+  patient_name    String                  @db.VarChar(255)
+  vn              String                  @db.VarChar(255)
+  doctor_code     String                  @db.VarChar(255)
+  doctor_name     String                  @db.VarChar(255)
+  location_code   String                  @db.VarChar(255)
+  location_name   String                  @db.VarChar(255)
+  building        String                  @db.VarChar(255)
+  service         String                  @db.VarChar(255)
+  appt_row_id     String                  @db.VarChar(255)
+  appt_date       String                  @db.VarChar(255)
+  appt_time       String                  @db.VarChar(255)
+  arrive_date     String                  @db.VarChar(255)
+  arrive_time     String                  @db.VarChar(255)
+  queue_no        String                  @db.VarChar(255)
+  status_lab      String?                 @db.VarChar(100)
+  status_xray     String?                 @db.VarChar(100)
+  is_emergency    log_doctor_is_emergency
+  status          log_doctor_status
+  created_at      DateTime                @default(now()) @db.DateTime(0)
+  updated_at      DateTime                @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_pharmacy {
+  cashier_queue_id        Int
+  patient_hn              String                        @db.VarChar(255)
+  patient_name            String                        @db.VarChar(255)
+  vn                      String                        @db.VarChar(255)
+  queue_no                String                        @db.VarChar(255)
+  patient_location_code   String                        @db.VarChar(255)
+  patient_location_name   String                        @db.VarChar(255)
+  discharge_location_code String                        @db.VarChar(255)
+  discharge_location_name String                        @db.VarChar(255)
+  discharge_building      String                        @db.VarChar(255)
+  meddischarge_date       String                        @db.VarChar(255)
+  meddischarge_time       String                        @db.VarChar(255)
+  accepted_date           String                        @db.VarChar(255)
+  accepted_time           String                        @db.VarChar(255)
+  collected_date          String                        @db.VarChar(255)
+  collected_time          String                        @db.VarChar(255)
+  is_cashier              log_pharmacy_is_cashier
+  medicine_status         log_pharmacy_medicine_status?
+  medicine_room           Int?
+  cashier_status          log_pharmacy_cashier_status?
+  cashier_room            Int?
+  remark                  String?                       @db.LongText
+  method_status           log_pharmacy_method_status?
+  created_at              DateTime                      @default(now()) @db.DateTime(0)
+  updated_at              DateTime                      @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model marketing_news {
+  marketing_news_id Int
+  thumbnail_image   String    @db.LongText
+  title_th          String    @db.Text
+  title_en          String    @db.Text
+  content_th        String    @db.LongText
+  content_en        String    @db.LongText
+  image             String    @db.LongText
+  start_date        DateTime  @db.Date
+  end_date          DateTime  @db.Date
+  status            Boolean   @default(true)
+  created_by        Int
+  updated_by        Int
+  created_at        DateTime  @default(now()) @db.DateTime(0)
+  updated_at        DateTime  @default(now()) @db.DateTime(0)
+  deleted_at        DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model marketing_news_banner {
+  marketing_news_banner_id Int
+  image                    String    @db.LongText
+  start_date               DateTime  @db.Date
+  end_date                 DateTime  @db.Date
+  status                   Boolean   @default(true)
+  created_by               Int
+  updated_by               Int
+  created_at               DateTime  @default(now()) @db.DateTime(0)
+  updated_at               DateTime  @default(now()) @db.DateTime(0)
+  deleted_at               DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model marketing_promotion {
+  marketing_promotion_id Int
+  thumbnail_image        String    @db.LongText
+  title_th               String    @db.Text
+  title_en               String    @db.Text
+  content_th             String    @db.LongText
+  content_en             String    @db.LongText
+  image                  String    @db.LongText
+  start_date             DateTime  @db.Date
+  end_date               DateTime  @db.Date
+  status                 Boolean   @default(true)
+  created_by             Int
+  updated_by             Int
+  created_at             DateTime  @default(now()) @db.DateTime(0)
+  updated_at             DateTime  @default(now()) @db.DateTime(0)
+  deleted_at             DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model marketing_promotion_banner {
+  marketing_promotion_banner_id Int
+  image                         String    @db.LongText
+  start_date                    DateTime  @db.Date
+  end_date                      DateTime  @db.Date
+  status                        Boolean   @default(true)
+  created_by                    Int
+  updated_by                    Int
+  created_at                    DateTime  @default(now()) @db.DateTime(0)
+  updated_at                    DateTime  @default(now()) @db.DateTime(0)
+  deleted_at                    DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model marketing_service {
+  marketing_service_id Int
+  icon_image           String    @db.LongText
+  title_th             String    @db.Text
+  title_en             String    @db.Text
+  content_th           String    @db.LongText
+  content_en           String    @db.LongText
+  image                String    @db.LongText
+  created_by           Int
+  updated_by           Int?
+  created_at           DateTime  @default(now()) @db.DateTime(0)
+  updated_at           DateTime  @default(now()) @db.DateTime(0)
+  deleted_at           DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model marketing_service_banner {
+  marketing_service_banner_id Int
+  image                       String    @db.LongText
+  start_date                  DateTime  @db.Date
+  end_date                    DateTime  @db.Date
+  status                      Boolean   @default(true)
+  created_by                  Int
+  updated_by                  Int
+  created_at                  DateTime  @default(now()) @db.DateTime(0)
+  updated_at                  DateTime  @default(now()) @db.DateTime(0)
+  deleted_at                  DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model medicine_notification {
+  medicine_notification_id Int
+  name                     String                                  @db.VarChar(255)
+  total_medicine           Int
+  at_time                  Int
+  unit_total               medicine_notification_unit_total
+  before_after_food        medicine_notification_before_after_food
+  select_moment            String                                  @db.Text
+  status                   Boolean                                 @default(true)
+  users_mobile_id          Int
+  created_by               Int
+  updated_by               Int
+  created_at               DateTime                                @default(now()) @db.DateTime(0)
+  updated_at               DateTime                                @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model menu_control {
+  id                    Int
+  menu_control_name     String    @db.VarChar(255)
+  menu_control_part     String    @db.VarChar(255)
+  menu_control_icon     String?   @db.VarChar(255)
+  menu_control_main_sub Int?
+  menu_control_index    Int
+  menu_control_status   Int
+  created_by            Int
+  updated_by            Int
+  created_at            DateTime  @default(now()) @db.DateTime(0)
+  updated_at            DateTime  @default(now()) @db.DateTime(0)
+  deleted_at            DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notifications_mobile {
+  notifications_mobile_id Int
+  users_mobile_id         Int
+  noti_title              String                         @db.VarChar(255)
+  noti_body               String                         @db.Text
+  noti_type               notifications_mobile_noti_type
+  status                  notifications_mobile_status
+  created_by              Int
+  updated_by              Int?
+  created_at              DateTime                       @default(now()) @db.DateTime(0)
+  updated_at              DateTime                       @default(now()) @db.DateTime(0)
+  deleted_at              DateTime?                      @db.DateTime(0)
+  noti_url                String?                        @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model otp {
+  otp_id          Int
+  otp             String   @db.VarChar(255)
+  ref             String   @db.VarChar(255)
+  expiration_time DateTime @db.DateTime(0)
+  verified        Boolean  @default(false)
+  created_at      DateTime @default(now()) @db.DateTime(0)
+  updated_at      DateTime @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model queue_text {
+  queue_text_id Int
+  text          String    @db.Text
+  medicine_text String    @db.Text
+  cashier_text  String    @db.Text
+  created_by    Int
+  updated_by    Int
+  created_at    DateTime  @db.DateTime(0)
+  updated_at    DateTime  @db.DateTime(0)
+  deleted_at    DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model role {
+  id         Int
+  role_name  String    @db.VarChar(255)
+  status     Boolean   @default(true)
+  created_by Int
+  updated_by Int
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  updated_at DateTime  @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model role_management {
+  id                Int
+  role_id           Int
+  menu_id           Int
+  permission_access Int
+  status            Boolean   @default(true)
+  created_by        Int
+  updated_by        Int
+  created_at        DateTime  @default(now()) @db.DateTime(0)
+  updated_at        DateTime  @default(now()) @db.DateTime(0)
+  deleted_at        DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room {
+  room_id    Int
+  name       String      @db.Text
+  floor_id   Int
+  status     room_status
+  created_by Int
+  updated_by Int
+  created_at DateTime    @default(now()) @db.DateTime(0)
+  updated_at DateTime    @default(now()) @db.DateTime(0)
+  deleted_at DateTime?   @db.DateTime(0)
+  name_en    String?     @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room_doctor {
+  room_doctor_id Int
+  room_id        Int
+  doctor_code    String              @db.VarChar(255)
+  day_room       String              @db.Text
+  moment         room_doctor_moment?
+  created_by     Int
+  updated_by     Int
+  created_at     DateTime            @default(now()) @db.DateTime(0)
+  updated_at     DateTime            @default(now()) @db.DateTime(0)
+  deleted_at     DateTime?           @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model room_eng {
+  room_id    Int
+  name       String          @db.Text
+  floor_id   Int
+  status     room_eng_status
+  created_by Int
+  updated_by Int
+  created_at DateTime        @default(now()) @db.DateTime(0)
+  updated_at DateTime        @default(now()) @db.DateTime(0)
+  deleted_at DateTime?       @db.DateTime(0)
+  name_en    String?         @db.Text
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model statments {
+  statments_id    Int
+  billing_id      Int
+  bill_group_code String   @db.VarChar(255)
+  bill_group_name String   @db.VarChar(255)
+  price           Float    @db.Float
+  created_at      DateTime @default(now()) @db.DateTime(0)
+  updated_at      DateTime @default(now()) @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id           Int
+  role_id      Int?
+  fullname     String?   @db.VarChar(255)
+  email        String?   @db.VarChar(255)
+  username     String    @db.VarChar(255)
+  password     String    @db.VarChar(255)
+  image_path   String?   @db.VarChar(255)
+  phone_number String?   @db.VarChar(255)
+  status       Boolean   @default(true)
+  is_admin     Boolean   @default(false)
+  created_by   Int
+  updated_by   Int
+  created_at   DateTime  @default(now()) @db.DateTime(0)
+  updated_at   DateTime  @default(now()) @db.DateTime(0)
+  deleted_at   DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users_mobile {
+  users_mobile_id Int
+  patient_plan    String?   @db.VarChar(255)
+  hn_number       String    @db.VarChar(255)
+  fullname        String?   @db.VarChar(255)
+  email           String?   @db.VarChar(255)
+  username        String    @db.VarChar(255)
+  password        String    @db.VarChar(255)
+  pin             String?   @db.VarChar(255)
+  image_path      String?   @db.VarChar(255)
+  phone_number    String?   @db.VarChar(255)
+  pid             String?   @db.VarChar(255)
+  dob             DateTime? @db.Date
+  status          Boolean   @default(true)
+  noti_token      String?   @db.Text
+  created_by      Int
+  updated_by      Int
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  updated_at      DateTime  @default(now()) @db.DateTime(0)
+  deleted_at      DateTime? @db.DateTime(0)
+  has_noti        Boolean   @default(true)
+  lang            String?   @default("th") @db.VarChar(255)
+  customer_id     String?   @db.VarChar(255)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users_public {
+  users_public_id Int
+  client_id       String    @db.VarChar(255)
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  updated_at      DateTime  @default(now()) @db.DateTime(0)
+  deleted_at      DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+enum appointments_rights {
+  STATUS_1 @map("1")
+  STATUS_0 @map("0")
+}
+
+enum floor_rights {
+  STATUS_1 @map("1")
+  STATUS_0 @map("0")
+}
+
+enum room_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+}
+
+enum room_eng_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+}
+
+enum medicine_notification_unit_total {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+}
+
+enum notifications_mobile_noti_type {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+  // 4 @map("4")
+}
+
+enum room_doctor_moment {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+}
+
+enum emergency_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+}
+
+enum medicine_notification_before_after_food {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum notifications_mobile_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum appointments_status {
+  STATUS_2 @map("2")
+  STATUS_1 @map("1")
+  STATUS_0 @map("0")
+}
+
+enum billing_has_webhook_notify {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum billing_payment_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum cashier_queue_is_cashier {
+  Y
+  N
+}
+
+enum log_cashier_is_cashier {
+  Y
+  N
+}
+
+enum log_pharmacy_is_cashier {
+  Y
+  N
+}
+
+enum cashier_queue_medicine_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+}
+
+enum log_cashier_medicine_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+}
+
+enum log_pharmacy_medicine_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+}
+
+enum doctor_queue_is_emergency {
+  Y
+  N
+}
+
+enum log_doctor_is_emergency {
+  Y
+  N
+}
+
+enum cashier_queue_cashier_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+  // 4 @map("4")
+  // 5 @map("5")
+}
+
+enum doctor_queue_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+}
+
+enum log_cashier_cashier_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+  // 4 @map("4")
+  // 5 @map("5")
+}
+
+enum log_doctor_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+}
+
+enum log_pharmacy_cashier_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+  STATUS_2 @map("2")
+  // 3 @map("3")
+  // 4 @map("4")
+  // 5 @map("5")
+}
+
+enum cashier_queue_cashier_status_mobile {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum cashier_queue_payment_type {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum doctor_queue_lang {
+  th
+  en
+}
+
+enum log_cashier_method_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum log_pharmacy_method_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum cashier_queue_method_status {
+  STATUS_0 @map("0")
+  STATUS_1 @map("1")
+}
+
+enum cashier_queue_lang {
+  th
+  en
+}
